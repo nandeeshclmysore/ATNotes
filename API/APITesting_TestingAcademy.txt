@@ -114,7 +114,7 @@ If any data missing, need to ask with BA or Developer.
 =================================
 Sample URL:https://restful-booker.herokuapp.com/apidoc/index.html#api-Booking-GetBookings
 Project: Restful Booker 
-Sample Collection URL: https://api.postman.com/collections/19074261-ce50df9e-57a6-4492-9dbd-01617be57b3a?access_key=PMAT-01J92RN01HRAXKR6FZM2WSSF4X
+Sample Collection URL: 
 
 What to Test
 ------------
