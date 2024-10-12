@@ -1,0 +1,1046 @@
+GitHub URL: https://github.com/nandeeshclmysore/RestassuredFrameworkAT.git
+Contents
+========
+1. Basics
+2. REST API Testing using POSTMAN
+3. Rest assured basics
+4. Test NG
+5. Allure report
+
+
+
+
+
+******************************************************************************************************************************************************
+1. Basics
+=========
+Authentication vs Authorization
+-------------------------------
+->To access system we need Authentication and to use specific resources in the system then we need Authorization
+
+Cookies
+-------
+->When client interacts with server, small piece of information is sent back to client and its store in browser for further requests from same client to the server.
+->Used for tracking session of the user, for personalization [user preference], for tracking [user behaviour]
+->ublock origin: extension used to block creating cookies 
+->To see cookies info, Open dev tools and go to application and cookies and see cookies for any applications.
+->We can install plugins to see cookies information if needed.
+
+Extension: edit this cookie
+can be added to browser to see all cookies set in the browser for the application
+
+URL
+---
+protocol://domain name/path parameter?queryParameter key=queryParameterValue&queryParameter key=queryParameterValue
+protocol://domain name/path parameter?queryParameter key=queryParameterValue#inthepagewhereweneedtogovalue
+
+http protocol port number =80
+https protocol port number =443
+both will not be visible in url
+
+Headers
+-------
+->Additional information of the request provided from client to server - Request header
+  Additional information of the request provided from client to server - Response header
+
+Extension: http header
+can be added to browser to see all request and response headers of the request
+
+API
+---
+->Business logic or collection of functions or program which allows 2 application to communicate with each other. 
+->Business logic which perform some operations and expose over the internet [Webservice]
+
+What we test:
+->Implemented Business logic is working fine or not
+Ex: With valid cred does login api is allowing to access the system or not.
+
+Types of Web services
+---------------------
+->Services available over internet
+->Rest, Soap and XML-RPC
+
+API
+ Web Service
+  Rest/Soap/Xml-RPC
+
+HTTP Methods
+------------
+->Get/Post/Put/Delete/Patch/Head/Option
+->These are some rules to be followed to access server for any specific tasks.
+
+Get: Get the resource from server
+Post: Create new resource in the server
+Put: Update full resource in the server
+Patch: Update partial resource in the server
+Delete: Delete the resource from the server
+Head: To get only header information in response
+
+JSON
+----
+->File or format used to share data between client and server.
+->Supported Data types: string, number, array [], Boolean, null, object{}
+->jsoncrack.com/editor/jsonpathfinder
+
+SOAP
+----
+->Messaging protocol used to transfer data from client to server. Uses XML for data transfer.
+->Uses SMTP or HTML protocol.
+
+Ex 1: URL: https://www.dataaccess.com/webservicesserver/NumberConversion.wso?op=NumberToWords
+POST /webservicesserver/NumberConversion.wso HTTP/1.1
+Host: www.dataaccess.com
+Content-Type: text/xml; charset=utf-8
+Content-Length: length
+
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <NumberToWords xmlns="http://www.dataaccess.com/webservicesserver/">
+      <ubiNum>unsignedLong</ubiNum>
+    </NumberToWords>
+  </soap:Body>
+</soap:Envelope>
+
+API Documentation
+-----------------
+Request: URL, Method type, Headers, Cookie, Authentication, Payload, Parameter
+Response: Payload, Status code, Response time
+
+If any data missing, need to ask with BA or Developer.
+
+******************************************************************************************************************************************************
+2. REST API Testing using POSTMAN
+=================================
+Sample URL:https://restful-booker.herokuapp.com/apidoc/index.html#api-Booking-GetBookings
+Project: Restful Booker 
+Sample Collection URL: https://api.postman.com/collections/19074261-ce50df9e-57a6-4492-9dbd-01617be57b3a?access_key=PMAT-01J92RN01HRAXKR6FZM2WSSF4X
+
+What to Test
+------------
+->HTTP Status code
+->Schema validation
+->Response validation
+->Response Headers
+->Data base integration
+->End to End CRUD
+->Chaining request validations
+
+->Test with Max and Min value test data
+->Test with Nulls and Empty strings test data
+->Test with Mandatory and Optional strings test data
+->Test with Unicode characters
+
+API Monitoring
+-------------
+->Test specific API or every hour or minute,....is it working fine or not.
+->Ex: Check login API is working fine every hours once.
+
+How:
+->Create an API which are all to be monitored in postman, Add it to one collection, Provide some validation in test section, Right click on three dots on collection, Click on monitor, Provide time and email and monitor.
+->Now this will run for every specified time and send email if its failed.
+
+Collection
+----------
+->Group of similar request
+->Can run all API once 
+->Used to segregate the requests.
+
+Authentication
+--------------
+->Based on API supported, we need to use Authorization. Provided in API documentation.
+
+->No AUTH : No auth is needed
+->Basic auth: 
+  Need user name and password in base 64[encrypted] and add in Authorization section OR
+  In header, Key as Authorization and Value as Basic <provided encrypted value>
+->Cookie: In header, Cookie as key and value as provided token.
+->Digest Auth: 
+  More secured than Basic auth with MD5 algorithm
+  Select Authorization, Provide UN and PW, Select Algorithm has SHA256 and MD5.
+->Bearer token [random string but with no meaning]/JWT token [random string with some info if we decoded]:
+  Token obtained from token hitting some API and provide that token in further request.
+  In header, Key as Authorization and Value as Bearer <provided encrypted value>
+->OAuth1.0 and 2.0
+
+Test Validation
+---------------
+->Create and run for one time, use AI and add all test validations OR
+->Add manually using Snippet
+  Status code, Response content check, Response schema validations
+->validation to be added in Script->Post response section
+
+Ex: Register API
+URL:https://reqres.in/api/register
+Method: POST
+Request Payload:
+{
+    "email": "eve.holt@reqres.in",
+    "password": "pistol"
+}
+
+Response Payload:
+{
+    "id": 4,
+    "token": "QpwL5tke4Pnpja7X4"
+}
+
+Validations:
+pm.test("Response status code is 200", function () {
+  pm.response.to.have.status(200);
+});
+
+pm.test("Response time is less than 200ms", function () {
+  pm.expect(pm.response.responseTime).to.be.below(200);
+});
+
+pm.test("Content-Type header is application/json", function () {
+    pm.expect(pm.response.headers.get("Content-Type")).to.include("application/json");
+});
+
+pm.test("Response has the required fields - id and token", function () {
+    const responseData = pm.response.json();
+    pm.expect(responseData).to.be.an('object');
+    pm.expect(responseData).to.have.property('id');
+    pm.expect(responseData).to.have.property('token');
+});
+
+pm.test("Token value is not null", function () {
+  const responseData = pm.response.json();
+  pm.expect(responseData.token).to.not.be.null;
+});
+
+Newman Run
+----------
+->Used to execute from our collection present in postman [given url of the collection] in command prompt
+->Newman: Command line tool used to run collection and generate html and/or cli report.
+->Newman + Jenkins: To run periodically and send report
+
+Steps:
+1. Install Node, Newman and Html reporter
+->Install Nodejs from Google download
+
+->Verify Node, NPM is installed 
+  node --version
+  npm --version
+
+->Install Newman
+ npm  install -g newman
+
+->Verify Newman is installed
+ newman --version
+
+->Install html reporter
+ npm  install -g newman-reporter-htmlextra
+
+2. Run collection using new man in command prompt and generate report
+   Get the URL of the collection
+   Create a folder where report has to be generated, and open command prompt from there and execute below command 
+   mkdri <foldername>
+   cd <folder name>
+
+   newman run <collection url> -r htmlextra,cli    //generates report in html file and also in cli
+
+   newman run <collection url> -d <file name> -n <no of times to run> -r htmlextra,cli    //run collection with test data stored in csv and generates report in html file and also in cli Note: Keep test data file in the folder where u r running or provide complete path were test data exists
+
+Ex: newman run https://api.postman.com/collections/19074261-ee94786d-6080-4972-b25b-36cd2d24ff6c?access_key=PMAT-01J95TW88VRZ008432W52BVA13 -d testdata.csv -n 10 -r htmlextra,cli
+
+->Now specified collection will be executed and html report will be generated, we can also see execution details in command prompt. 
+->Inside the newman folder, html report will be created
+
+JavaScript basic for creating validation
+----------------------------------------
+//To print message
+console.log("hello");
+console.log(2+2);
+
+//Create var
+var a=10;
+console.log(a);
+
+//Data types
+int, string, Boolean
+
+//Object
+var xobject={
+
+name:"appu",
+age:33;
+}
+
+console.log(xobject.age);
+console.log(xobject["name"]);
+
+//functions
+function doAdd(a)
+{
+console.log(a);
+}
+
+doAdd(12);
+
+function doAdd(a+b)
+{
+return a+b
+}
+
+var sum=doAdd(12+22);
+console.log(sum);
+
+//JSON->JS Object
+var reponse='{"name":"appu","age":"22"}';
+var parsedResponse=JSON.pasre(response);
+
+c.l(parsedResponse["name"]); //appu
+c.l(parsedResponse["age"]); //22
+
+//JS Object to JSON
+var jsObject={
+name:"appu",
+age:33;
+}
+
+var jsonObject=JSON.stringify(jsObject);
+c.l(jsonObject);
+
+Data Driven Testing using Postman
+---------------------------------
+Steps:
+->Store data in csv file
+Ex:
+username password
+admin    admin123
+super    super123
+
+mockaro.com/you.com
+Dummy data generation site
+
+->Use column name as variable name
+{{username}} in url, payload,...
+
+->Right click on the collection , Run collection, Select the file, Select no of iteration and Run
+->Supports csv and json file data
+
+******************************************************************************************************************************************************
+3. Rest assured basics
+======================
+Rest Assured
+------------
+->Library / Java Domain Specific language  API which is used to write automated tests for Restful API's.
+->Uses Gherkin syntax
+
+Note: Cucumber : Tool[Java]
+      Gherkin: language or Syntax
+      BDD: Approach of writing features using Gherkin syntax
+
+Group ID: Organization domain
+Artifact ID: Project name
+
+Create Maven project and add all dependency
+-------------------------------------------
+<!-- https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+<dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>5.5.0</version>
+      <scope>test</scope>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.testng/testng -->
+<dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.10.2</version>
+    <scope>test</scope>
+</dependency>
+
+
+Format of writing
+-----------------
+Gherkin Syntax:
+Given-pre condition[header,cookie,url,body]
+when()-method call
+then()-validations
+
+Rest assured can be implemented in two ways:
+BDD Style and Non BDD Style
+
+BDD Style:
+
+Ex:        
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+
+public class BDDStylePost1 {
+    public static void main(String[] args) {
+        String payload="{\n" +
+                "    \"username\" : \"admin\",\n" +
+                "    \"password\" : \"password123\"\n" +
+                "}";
+
+        RestAssured.
+                 given().log().all()
+                .baseUri("https://restful-booker.herokuapp.com").contentType(ContentType.JSON)
+                .body(payload)
+                .basePath("/auth")
+                .when().post()
+                .then().log().all()
+                .statusCode(200);
+    }
+}
+
+Non BDD Style:
+->Reusability and reduce duplicate codes
+->RequestSpecification[given()], Response[when()] and ValidatableResponse[then()]
+->All three are interfaces
+
+Ex:
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
+
+public class NonBDDStylePOST1 {
+    public static void main(String[] args) {
+        String payload = "{\n" +
+                "    \"username\" : \"admin\",\n" +
+                "    \"password\" : \"password123\"\n" +
+                "}";
+
+        RequestSpecification requestSpecification = RestAssured.given();
+        requestSpecification.log().all().
+                baseUri("https://restful-booker.herokuapp.com").contentType(ContentType.JSON)
+                .body(payload)
+                .basePath("/auth");
+
+        Response response = requestSpecification.when().post();
+
+        ValidatableResponse validatableResponse = response.then().log().all();
+    }
+}
+
+
+Payload can be specified in three ways
+---------------------------------------
+->String
+->HashMap
+->Classes
+
+->HashMap
+Add GSON dependency
+
+<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.11.0</version>
+</dependency>
+
+
+Ex: 
+{
+    "firstname" : "Pramod1",
+    "lastname" : "Brown",
+    "totalprice" : 111,
+    "depositpaid" : true,
+    "bookingdates" : {
+        "checkin" : "2018-01-01",
+        "checkout" : "2019-01-01"
+    },
+    "additionalneeds" : "Breakfast"
+}
+
+HashMap<String, String> sub = new HashMap<>();
+        sub.put("checkin", "2018-01-01");
+        sub.put("checkout", "2019-01-01");
+
+        HashMap<String, Object> main = new HashMap<>();
+        main.put("firstname", "appu");
+        main.put("lastname", "raj");
+        main.put("totalprice", 111);
+        main.put("depositpaid", true);
+        main.put("bookingdates", sub);
+        main.put("additionalneeds", "Breakfast");
+
+Serialization and De Serialization
+----------------------------------
+Java code[POC][Object]->JSON String : Serialization
+JSON String ->Java code[POC][Object] : De Serialization
+This process done by Jackson data bind library or GSON library
+
+Reason: To send data over internet we need data in form of JSON not object
+Add GSON or Jackson API in pom.xml file
+
+POJO Class
+----------
+
+Serialization:
+->Data maintain is easy and re usability.
+->Create POJO class and Convert POJO class object to JSON using GSON and use in body()
+        //GSON
+        Gson gson = new Gson();
+        String payload = gson.toJson(bi); //Converts POJO class Java Object to JSON
+->URL to create POJO class
+https://json2csharp.com/code-converters/json-to-pojo
+https://www.jsonschema2pojo.org/
+
+
+Ex: Using JSON
+{
+    "firstname" : "Pramod1",
+    "lastname" : "Brown",
+    "totalprice" : 111,
+    "depositpaid" : true,
+    "bookingdates" : {
+        "checkin" : "2018-01-01",
+        "checkout" : "2019-01-01"
+    },
+    "additionalneeds" : "Breakfast"
+}
+
+POJO Class
+public class BookingDates {
+
+    private String checkin;
+    private String checkout;
+
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(String checkout) {
+        this.checkout = checkout;
+    }
+
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(String checkin) {
+        this.checkin = checkin;
+    }
+
+}
+
+public class BookingInfo {
+    private String firstname;
+    private String lastname;
+    private int totalprice;
+    private boolean depositpaid;
+    private BookingDates bookingdates;
+    private String additionalneeds;
+
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public int getTotalprice() {
+        return totalprice;
+    }
+
+    public void setTotalprice(int totalprice) {
+        this.totalprice = totalprice;
+    }
+
+    public boolean isDepositpaid() {
+        return depositpaid;
+    }
+
+    public void setDepositpaid(boolean depositpaid) {
+        this.depositpaid = depositpaid;
+    }
+
+    public BookingDates getBookingdates() {
+        return bookingdates;
+    }
+
+    public void setBookingdates(BookingDates bookingdates) {
+        this.bookingdates = bookingdates;
+    }
+
+    public String getAdditionalneeds() {
+        return additionalneeds;
+    }
+
+    public void setAdditionalneeds(String additionalneeds) {
+        this.additionalneeds = additionalneeds;
+    }
+
+
+Main Request Class
+public class GSONSerializationForBookingPOSTRequest {
+
+    RequestSpecification requestSpecification;
+    Response response;
+    ValidatableResponse validatableResponse;
+    int bookingID;
+
+    @Description("This test is used to create new bookings")
+    @Test
+    public void testBooking() {
+        String URL = "https://restful-booker.herokuapp.com";
+        String URI = "/booking";
+
+        BookingDates bd = new BookingDates();
+        bd.setCheckin("2018-01-01");
+        bd.setCheckout("2019-01-01");
+
+        BookingInfo bi = new BookingInfo();
+        bi.setFirstname("Appu");
+        bi.setLastname("Raj");
+        bi.setTotalprice(123);
+        bi.setDepositpaid(true);
+        bi.setBookingdates(bd);
+        bi.setAdditionalneeds("Dinner");
+
+        //GSON
+        Gson gson = new Gson();
+        String payload = gson.toJson(bi); //Converts Java Object to JSON
+
+        requestSpecification = RestAssured.given();
+        requestSpecification.log().all().
+                baseUri(URL).contentType(ContentType.JSON)
+                .body(payload)
+                .basePath(URI);
+
+        Response response = requestSpecification.when().post();
+
+        bookingID = response.jsonPath().getInt("bookingid");
+        System.out.println("BOOKING ID: " + bookingID);
+
+    }
+}
+
+
+De Serialization
+->Can use same pojo class used for Serialization and if any new item present create new Pojo classes for those
+->Use GSON to convert back response coming as Json to java Object 
+->Now using getter methods we can get the required values
+
+Ex:
+        String responseAsString=response.asString();
+        BookingResponseDeserializationPOJO brdp= gson.fromJson(responseAsString,BookingResponseDeserializationPOJO.class);
+        System.out.println("BOOKING ID: "+ brdp.getBookingid());
+        System.out.println("FIRST NAME"+brdp.getBooking().getFirstname());
+
+//BookingResponseDeserializationPOJO is new POJO class used for De serialization
+
+Request payload
+{
+    "firstname" : "Pramod1",
+    "lastname" : "Brown",
+    "totalprice" : 111,
+    "depositpaid" : true,
+    "bookingdates" : {
+        "checkin" : "2018-01-01",
+        "checkout" : "2019-01-01"
+    },
+    "additionalneeds" : "Breakfast"
+}
+
+Response payload
+
+{
+    "bookingid": 2655,
+    "booking": {
+        "firstname": "Pramod1",
+        "lastname": "Brown",
+        "totalprice": 111,
+        "depositpaid": true,
+        "bookingdates": {
+            "checkin": "2018-01-01",
+            "checkout": "2019-01-01"
+        },
+        "additionalneeds": "Breakfast"
+    }
+}
+
+Now only for additional fields create POJO class and utilize existing class
+ "bookingid": 2655,
+
+Additonal POJO class
+public class BookingResponseDeserializationPOJO {
+
+    private int bookingid;
+    private BookingInfoPOJO booking;
+    
+    public int getBookingid() {
+        return bookingid;
+    }
+
+    public void setBookingid(int bookingid) {
+        this.bookingid = bookingid;
+    }
+
+    public BookingInfoPOJO getBooking() {
+        return booking;
+    }
+
+    public void setBooking(BookingInfoPOJO booking) {
+        this.booking = booking;
+    }
+
+
+}
+
+
+Serialization:
+->Create POJO Class for Request payload
+public class BookingDatesPOJO {
+    private String checkin;
+    private String checkout;
+
+    public String getCheckout() {
+        return checkout;
+    }
+
+    public void setCheckout(String checkout) {
+        this.checkout = checkout;
+    }
+
+    public String getCheckin() {
+        return checkin;
+    }
+
+    public void setCheckin(String checkin) {
+        this.checkin = checkin;
+    }
+}
+->Provide values for all the fields by creating objects and using setter()
+        BookingDatesPOJO bd = new BookingDatesPOJO();
+        bd.setCheckin("2018-01-01");
+        bd.setCheckout("2019-01-01");
+
+->Convert JAVA Object to JSON string using Gson
+        Gson gson = new Gson();
+        String payload = gson.toJson(bi); //Converts Java Object to JSON
+->Use it in string in body(payload)
+
+Deserialization:
+->Create POJO for Response Payload
+->If needed we can use existing Request payload POJO classes
+public class BookingResponseDeserializationPOJO {
+
+    private int bookingid;
+    private BookingInfoPOJO booking;
+
+    public int getBookingid() {
+        return bookingid;
+    }
+
+    public void setBookingid(int bookingid) {
+        this.bookingid = bookingid;
+    }
+
+    public BookingInfoPOJO getBooking() {
+        return booking;
+    }
+
+    public void setBooking(BookingInfoPOJO booking) {
+        this.booking = booking;
+    }
+}
+->Hit the request and fetch Response 
+->Convert Response to String
+    Response response = requestSpecification.when().post();
+    String responseAsString=response.asString();
+->Convert JSON String response back to JSON Object
+ BookingResponseDeserializationPOJO brdp= gson.fromJson(responseAsString,BookingResponseDeserializationPOJO.class);
+->Call getter() and fetch any required values
+        System.out.println("BOOKING ID: "+ brdp.getBookingid());
+        System.out.println("FIRST NAME: "+brdp.getBooking().getFirstname());
+
+
+
+Fetch value from Response
+-------------------------
+response.jsonPath().getString("firstname");
+response.jsonPath().getInt("id");
+
+Case 1: using JSON Path from Response Interface object
+String firstName=response.jsonPath().getString("firstname");
+
+Case 2: Using extract() of  ValidatableResponse Interface object
+String firstName = validatableResponse.extract().path("booking.firstname");
+
+
+Validations
+-----------
+Ex Response:
+{
+    "bookingid": 2655,
+    "booking": {
+        "firstname": "Pramod1",
+        "lastname": "Brown",
+        "totalprice": 111,
+        "depositpaid": true,
+        "bookingdates": {
+            "checkin": "2018-01-01",
+            "checkout": "2019-01-01"
+        },
+        "additionalneeds": "Breakfast"
+    }
+}
+
+Case 1: Using Rest assured Hamcrest library
+import org.hamcrest.Matchers
+->To validate body content
+
+validatableResponse.body("actual vale jsonpath",Matchers.equalTo("expectedvalue"));
+Ex: 
+        validatableResponse.body("booking.firstname", Matchers.equalTo(firstName));
+        validatableResponse.body("booking.lastname", Matchers.notNullValue());
+
+Case 2: Hard and Soft assert
+Ex:Hard
+        int bookingID = response.then().extract().path("bookingid");
+        Assert.assertNotNull(bookingID);
+
+        String fn = response.then().extract().path("booking.firstname");
+        Assert.assertEquals(fn, "Nandeesh1", "First name not matching");
+
+Ex: Soft
+        SoftAssert sa = new SoftAssert();
+
+        String fn = response.then().extract().path("booking.firstname");
+        sa.assertEquals(fn, "Nandeesh1", "First name not matching");
+
+
+        int bookingID = response.then().extract().path("bookingid");
+        sa.assertNotNull(bookingID);
+
+        sa.assertAll();
+
+
+Case 3: AssertJ  Assertions
+->Add dependency
+<!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+<dependency>
+    <groupId>org.assertj</groupId>
+    <artifactId>assertj-core</artifactId>
+    <version>3.26.3</version>
+    <scope>test</scope>
+</dependency>
+
+
+->Multiple checkpoints in same line
+->Can validate String, List content, Map content, File validations, Date validations, Is value in integer, graeter than 0, not empty, not blank, not null,...
+->validate error message for different cases
+->validate response value is not blank[key]
+->validate schema
+ 
+import static org.assertj.core.api.Assertions.*;
+
+Ex:
+        String name=validatableResponse.extract().path("booking.firstname");
+        int id=response.jsonPath().getInt("bookingid");
+
+        assertThat(name).isNotNull().isNotEmpty().isNotBlank();
+        assertThat(id).isNotNull().isGreaterThan(0);
+
+JSON Path
+---------
+->Used to extract specific part from the response payload
+
+JsonPath js=new JsonPath(response.asString()); //convert fetched response data as string
+js.getString("jsonPath");
+
+**********************************************************************************************************************************************************
+4. Test NG
+==========
+Features
+--------
+->Testing framework
+->Can be used for Unit, Functional and End to End Integration testing.
+->Can be used for both UI and API testing.
+->Create, Execute, Organize test cases.
+->Parallel, Cross browser, Data driven, Parameterization testing support.
+->Reporting
+
+Annotations
+-----------
+@Test, @BeforeSuite, @BeforeTest, @BeforeClass, @BeforeMetod
+@DataProvider, @Parameter
+
+Suite ->N Test ->N Classes-> N Methods
+
+Attributes
+----------
+1. @Test(priority =1)
+   @BeforeClass(priority=0)
+
+2. @Test(enabled=false)
+3. @Test(alwaysRun=true)
+4. @Test(invocationCount=10)
+
+Grouping
+--------
+In Test Class
+@Test(groups={"reg","san"})
+
+In TestNG XML file
+<suite>
+ <test>
+   <groups>
+     <run>
+        <include name="group name"/>
+        <exclude name="group name" />
+     </run>
+   </groups>
+ </test>
+</suite>
+
+Dependency testing
+------------------
+@Test(dependsOnMethods={"methodName","methodName"})
+
+If depends method fails then depending method will be skipped.
+
+Parameters
+----------
+@Parameters("browser")
+@Test()
+public void run(String value)
+{}
+
+In TestNG XML file
+<suite>
+ <test>
+   <parameter name="browser" value="chrome"/>
+ </test>
+</suite>
+
+Assertion
+--------
+hard vs Soft assertion
+
+Hard : When any statement fails then below statement soft that test method will not be executed and also test case will fails.
+Soft: Even if any statement will fail until softAssert.All() all the statements will be executed and test case will be failed.
+      If we want to add multiple checkpoints and all to be evaluated before making it fails then we need to use this.
+      It validates all check points and if any one fails then whole test case will be failed.
+
+**********************************************************************************************************************************************************
+5. Allure report
+================
+Install:
+->Install node js
+->Run below command on cmd
+npm i -g allure-commandline
+->Install alure dependency in pom.xml
+
+    <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-testng -->
+    <dependency>
+      <groupId>io.qameta.allure</groupId>
+      <artifactId>allure-testng</artifactId>
+      <version>2.29.0</version>
+    </dependency>
+
+->Now we can use allure report annotations in our test cases.
+
+Use:
+package:
+import io.qameta.allure.*;
+
+@Severity(SelerityLevel.NORMAL)
+@Description("Ay description")
+....
+add required allured dependency for the test method
+
+https://allurereport.org/docs/testng-reference/
+
+
+->Run Test case
+->alure-results folder will be created
+->Run command in terminal [IDE]
+  allure serve allure-results/
+->Now report will be generated and url will be generated
+
+
+Ex:
+import io.qameta.allure.*;
+Fojo
+@Description("Update Booking Information")
+    @Test
+    public void updateData() {
+
+    }
+
+    @Test
+    @Description("This test attempts to log into the website using a login and a password. Fails if any error happens.\n\nNote that this test does not test 2-Factor Authentication.")
+    @Severity(SeverityLevel.CRITICAL)
+    @Owner("John Doe")
+    @Link(name = "Website", url = "https://dev.example.com/")
+    @Issue("AUTH-123")
+    @TmsLink("TMS-456")
+
+
+**********************************************************************************************************************************************************
+6. REST Assured Framework
+=========================
+Features
+--------
+->Maintenance/Reusability/Structured way/Organize
+
+Custom Hybrid API Automation framework Tech Stack
+-------------------------------------------
+1. Programming language - Java
+2. Build API - Rest Assured
+3. Validations - Assert J
+4. Payload management - Strings and POJO sing GSON and Jackson API
+5. Logs - Log4J
+6. Test data - Excel[Apache POI] and Fillow
+7. Reporting - Alure
+8. Build and Dependency management tool -Maven
+9. Unit testing framework - Test NG
+10.CI/CD - Git, GitHub and Jenkins
+11.Linting - Sonar Lint
+12. Utilities methods - Faker
+
+Steps:
+1. Create new Maven project and add Readme.md file
+2. Add Dependency 
+3. Structure
+
+src/main/java
+endpoint
+	APIConstants //Use to keep end points and base URL Ex:  public static String BASEURI = "https://restful-booker.herokuapp.com";
+modules
+	PayloadManager //Used to create payload by providing values to POJO class, It returns payload as string.
+pojo  //Used to keep all POJO classes for serialization and de serialization, It get value from PayloadManager class
+	
+src/test/java
+utils
+tests 
+  curd  //Used to  keep all test cases related to curd operations
+  integration //Used to  keep all integrated test cases 
+asserts
+	AssertActions //Used to  keep all assertion classes[validation classes]
+listeners	
+base
+  BaseTest //Contains @BeforeTest setup() for all intialzatio
+ 
+	
+
+
+
+
+
+
+
+
+
+

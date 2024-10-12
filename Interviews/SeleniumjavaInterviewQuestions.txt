@@ -1,0 +1,1360 @@
+Interview Questions
+===================
+1. Selenium and Core Java Interview questions
+2. Selenium Framework Interview questions
+3. Core WebDriver Interview Question
+4. Core Java Miscellaneous Interview Questions
+5. Programming Examples
+6. SQL Interview questions
+7. Manual and Behavioral Interview questions
+8. API Testing Interview Questions
+9. Cucumber framework Interview Questions
+
+*********************************************************************************************************************************************************
+Selenium and Core Java 
+======================
+1. Challenges with Selenium
+->No support for non web application
+->Sync issues
+->Limited reporting and other features, need to integrate with external API
+
+2. Selenium 4 features
+->Web driver is developed completely by W3C standardization
+->Selenium IDE support for chrome is available
+->Taking screenshot at specific Web element level, Section level and Page level is possible
+->Support for relative locators
+->Selenium Grid: Hub and Node are smooth to setup and handle. Once Selenium server is started the grid will act as a hub and node.
+  
+3. WebDriver.findElement vs WebElement.findElement
+
+4. Difference between Page object model and Page factory
+->Page factory we use @FindBy and PageFactory.initElements() method to initialize all the elements of the class.
+->By class will be used in POM
+->Both use same concepts to store locators but the way we define to store is different [@FindBY and By]
+
+5. Locators supported by Selenium
+->id,name,class,cssSelector,xpath,tagName,linkText,partialLinkText
+
+6. How to overcome Stale element exception
+->Identify and kept it, but when we try to use it it will not be part of DOM then we see SEE.
+->Solution:
+   Wait for 500ms and Re identify 
+   Refresh the page 
+   Identify wile using 
+   Implement Try[Perform action on identified element] Catch block[Re identify and perform action]
+
+7. Difference between xpath and css selector
+->Css is faster than Xpath
+->Xpath support text but Css will not
+->Xpath can move in both forward and backward direction but Css cant.
+
+8. Css Selector using nth element
+->Css Selector:nth-child(index alue);
+ 
+9. How to handle Alerts
+->Use Explicit wait before switching
+->If no alert found then Selenium will throw NoAlrtPresentException
+Alert alert=driver.switchTo().alert();
+alert.accept()
+alert.dismiss()
+alert.sendkeys()
+alert.getText()
+
+10. Different Exceptions
+->NoSuchElementException
+If we try to identify some element and its not available
+
+->NoSuchFrameException
+If we try to swicth to frame and it not exist
+
+->NoAlertPresentException
+If we try to swicth to alert and it not exist
+
+->ElementCLickInterceptedxception
+If we try to click on element and not possile 
+Ex: Click o dropdown option without opening it
+
+->StaleEementException
+->TimeOutException: Notable to perform sme conditio for given wait 
+->InvlidSelectorException: Wrong sysntax of Locator
+->SessionNotCreated: Driver session not initaited
+
+11. What is a Framework
+->Process or an Approach or best practises used to create our Test scripts for
+  Modularity
+  Maintainability
+  Reusability
+
+Types:
+Built In : 
+->Test Ng, Junit, Cucumber, ...
+
+Customized: 
+->Built In + Additional API
+->Data driver, Keyword driven, Hybrid framework
+
+12. Run test in Headless mode
+->CromeOptions options=new ChromeOtions();
+options.addArguements("--headless");
+WebDriver driver=new ChromeDiver();
+
+13.How to handle window based alert or pop up
+->Selenium supports only Web application and does not provide a way to automate Wb based application
+->Use Robot Class[Java based] to simulate the keyboard and mouse actions.
+->Use Auto IT
+
+14. What are Listeners in Selenium
+->ITestListener: Interface which observes the test execution 
+->It has abstract methods through which e can use it i our framework to perform post actions like reporting and attaching screenshot to report.
+onStart/onStart/onTestFailure/onTestSkipped/onFinish
+
+Framework: Reporting and Sreenshot attaching
+
+15.StringBufer and StringBuilder
+->Bot are used to store data of type String
+->String buffer is Synchronized, Thread safe and not Support multi threading. No two thread can call the methods simultaneously. 
+->All methods in Sting buffer class are synchronized methods.
+
+16.Advantages of Selenium in Automation world.
+->Open source, Big community support, Multiple platform, browsers and languages
+
+17. Hard and SoftAssert
+->Both used to put the check point iside the @Test methods
+->HA: If a checkpoint fails then all the below statements will not be executed and that specific test will be failed
+SA: can add multiple checkpoints and execute all checkpoints.
+
+18. Static methods and variables
+->Class specific
+->Any thing to be shared across class then make it static
+->Loaded once in meta space while loading specific class byte code.
+->Can invoke directly using class name no need to create object for it.
+
+Framework: Utility Methods, ExtentManager class method.
+
+19. Usage of this and super keyword
+
+this: To refer current class members
+super: To refer parent class members
+
+Framework:
+
+->In BaseTest, In @BM we initialize the driver and create object for Landing page of POC by sending driver object reference.
+
+public class BaseTest {
+
+	public WebDriver driver = null;
+
+	public WebDriver initializeDriver() throws IOException {
+
+		switch (browser) {
+		case "chrome":
+			driver = new ChromeDriver();
+			break;
+		}
+
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+		return driver;
+
+	}
+
+	@BeforeMethod(alwaysRun = true)
+	public void launchApplication() throws IOException {
+		driver = initializeDriver();
+		landingPage = new LandingPage(driver);
+		landingPage.goTo();
+	}
+
+}
+
+
+->In Landing page POC, inside constructor we use super(driver) and calls parent class of the POC which is Utilities class
+
+public class LandingPage extends Utilities{
+
+	public WebDriver driver;
+
+	public LandingPage(WebDriver driver) {
+		super(driver);
+		this.driver = driver;
+		PageFactory.initElements(driver, this); // Initialize current class driver object
+	}
+
+}
+
+->Inside Utilities class there is local Web driver object reference 
+->This gets life inside the constructor of Utilities class
+
+public class Utilities {
+	public WebDriver driver;
+	public WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+		
+	public Utilities(WebDriver driver) {
+		this.driver=driver;
+	}
+	
+	public void waitForAnElementToAppear(WebElement element) {
+		wait.until(ExpectedConditions.visibilityOf(element));
+	}
+	
+}
+
+20.Array vs Array List
+->Arrays is a DS or object used to store group of similar homogenous data and not growable in nature.
+->Array list is a Collection or an Class which implements List interface used to store both Homogeneous and Heterogeneous type of data and growable in nature.
+ 
+21. Difference between Interface and Abstract class
+
+22. HashMap and Hashtable
+->Both re used to store data as key value pair.
+->HashTable is synchronized/Thread safe
+->HM: One null key and multiple null vales
+->HT: No null key or value
+
+22. Diffeence between final, finally and  
+finalze()
+
+23. When to use Selenium Grid
+->Used to run scripts on multiple browser and OS concurrently.
+->To run script on distributed test environment
+
+24. How many objects will be created in following cases
+
+String s1="Welcome";
+String s2="Welcome";
+String s3="Welcome";
+
+Only one object will be created since all those are stored in SCP which not allows duplicates.
+All 3 ref var points to same object.
+
+**********************************************************************************************************************************************************
+Selenium Framework Questions
+==========================
+1. Components of Framework [Architecture]
+
+Framework architecture
+======================
+Java: Programming language
+Selenium Web driver : Test automation tool
+POM: Design pattern
+Test NG: Unit testing framework
+Java Properties file: To store global values
+Excel: To store data and use in Test cases
+Apache Log4J: To generate Logs
+Extent report: For reporting
+
+Maven: Build tool
+
+Test NG and POM xml : Selective test case, Parallel testing Test execution.
+
+Git hub: To store code
+Jenkins: CI CD
+
+
+Component 1:
+Page Object class
+->Separate class has been created for each Web page 
+->Contains Elements, Actions and Constructor to initialize all the Elements 
+->Extends Utilities class
+
+Component 2:
+Utilities class for POC
+->Contains all Reusable reference variables and Utility methods used by POC.
+
+Component 3:
+Base Test class 
+->Contains Reusable reference variables, Driver initialization method[BM], Closing driver method [AM], Utility methods used by Test class methods
+
+Component 4:
+Test Class 
+->Contains all related Test methods which extends Base Test class
+->Create Object for POC and invokes action methods present in POC to perform required actions
+->Perform Validations
+->Read data from Excel or any Utility method and send it to POC action methods.
+->Extends Base Test class 
+
+Component 5:
+Listener Class
+->Implements ITestListener interface
+->Used to configure report and do all loggings for report generation
+->To attach Screenshot on any Test fails
+
+Component 6:
+TestNG XML file and POM XML file
+->To specify all required test cases to be executed.
+->Parallel testing, Grouping.
+->To Trigger the execution
+
+
+Component 7:
+Report generation class : Used to generate Extent report
+Excel reader class : Used to read data from excel and send it to Data provider class methods
+Data provider class : Accepts data from Excel reader class and send it to Test method
+
+2. Data Parameterization globally
+->config.properties file/ @DataProvider annotataion and dataprovider attribute/ @Parameters({"browser"})/<parameter name="browser" value="chrome"></parameter>
+
+Method 1:
+->Keep all global values in config.properties file and read it where ever required
+
+Method 2:
+->Using DataProvider Annotation
+
+->Passing test data from data provider class to test method
+->@DataProvider annotataion/dataprovider attribute
+->No of input in data provider method = No of times test method will be executed
+->Data can keep inside data provider method or keep in excel file
+->Return type of data provider method is 2D array
+@Test(dataProvider = "dp", dataProviderClass = DataProviderClass.class)
+@DataProvider(name = "dp")
+
+Ex:
+public class DataProvider1 {
+    @BeforeMethod
+    public void beforeMessage() {
+        System.out.println("Test started");
+    }
+
+    @AfterMethod
+    public void afterMessage() {
+        System.out.println("Test ended");
+    }
+
+    @Test(dataProvider = "dp", dataProviderClass = DataProviderClass.class)
+    public void login(String un, String pw,String status) {
+        System.out.println("User name:" + un);
+        System.out.println("Password:" + pw);
+        System.out.println("Status:" + status);
+    }
+}
+
+
+public class DataProviderClass {
+
+    @DataProvider(name = "dp")
+    public String[][] getData() {
+        String data[][] = {
+                {"appu", "appu123","valid"}, {"shivu", "shivu123","invalid"}
+        };
+
+        return data;
+    }
+}
+
+OUTPUT:
+Test started
+User name:appu
+Password:appu123
+Status:valid
+Test ended
+Test started
+User name:shivu
+Password:shivu123
+Status:invalid
+Test ended
+
+
+Method 3: 
+->Using Test NG XML file:
+->@Parameters({"browser"})/<parameter name="browser" value="chrome"></parameter>
+
+Ex:
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Practice Suite">
+    <test name="Test Basics 1">
+        <parameter name="browser" value="chrome"></parameter>
+        <parameter name="os" value="windows"></parameter>
+        <classes>
+            <class name="testng.DataParameterizationUsingXMlFIle"/>
+        </classes>
+    </test> <!-- Test -->
+</suite> <!-- Suite -->
+
+public class DataParameterizationUsingXMlFIle {
+
+    @BeforeMethod
+    @Parameters({"browser","os"})
+    public void beforeMessage(String br,String os) {
+        System.out.println("Test started in " + br.toUpperCase() + " browser and "+os.toUpperCase()+" OS");
+    }
+
+    @AfterMethod
+    public void afterMessage() {
+        System.out.println("Test ended");
+    }
+
+    @Test()
+    public void login() {
+        System.out.println("Test method...");
+    }
+}
+
+OUTPUT:
+Test started in CHROME browser and WINDOWS OS
+Test method...
+Test ended
+
+4. How to run Selected Test
+->Using Grouping
+
+  Assign methods to specific groups
+  dependsOnGroups={"group name","group name"}
+In @Test  
+groups={"regression", "sanity"}
+
+In XML file
+  <suite
+    <test
+      <groups> <run> 
+          <include name=""  />
+          <include name=""  />
+          <exclude name=""  />
+       </run> </groups>
+     <classes>  
+             <class name= ""/>
+     </classes>
+    </test>
+  </suite>
+
+5. How to skip specific test case excutio
+->Use @test(enabled=false) attribute OR
+->Use grouping with include and exclude in testng.xml file
+  Assign methods to specific groups
+  dependsOnGroups={"group name","group name"}
+In @Test  
+groups={"regression", "sanity"}
+
+In XML file
+  <suite
+    <test
+      <groups> <run> 
+          <include name=""  />
+          <include name=""  />
+          <exclude name=""  />
+       </run> </groups>
+     <classes>  
+             <class name= ""/>
+     </classes>
+    </test>
+  </suite>
+
+6. How to execute Pre and Post condition 
+@BeforeMethod and @AfterMehod
+
+7. How to prepare dependency execution for test
+->Use dependsOnMethods attribute 
+->If depending method failed then this method will be skipped
+
+@Test(dependsOnMethods = {"test2"})
+
+Ex:
+public class TestngListenersDemo {
+    @Test
+    public void test1() {
+        System.out.println("Test 1...");
+    }
+
+    @Test
+    public void test2() {
+        //System.out.println("Test2...");
+        Assert.fail();
+    }
+
+    @Test(dependsOnMethods = {"test2"})
+    public void test3() {
+        System.out.println("Test3...");
+    }
+}
+
+8. How to set priority
+->Using priority attribute
+->priority=1
+->Default priority is 0 and alphabetical order
+->If same priority for multiple method then it considers alphabetical order
+->Priority order: neg 0 positive
+
+Ex:
+    @Test(priority=1)
+    public void openBrowser() {
+        System.out.println("Open browser...");
+    }
+
+9. What is invocationCount in test Ng
+->To execute specific test method n number of times we use invocationCount attribute
+Ex:
+@Test(invocationCount=5)
+
+10. What is timeOut 
+->To fail tc after specific time
+@Test(timeOut=5000)
+
+11.Parallel execution in Test NG
+->Use attribute parallel in suite tag in xml
+<suite name="Practice Suite" parallel="tests" thread-count="2">
+->thread-count: To create no of threads at max 6 to execute the test
+->attribute value can be tests, classes, methods
+
+Ex:
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Practice Suite" parallel="tests" thread-count="2">
+    <test name="Test Basics 1">
+        <parameter name="browser" value="chrome"></parameter>
+        <parameter name="os" value="windows"></parameter>
+        <classes>
+            <class name="testng.ParallelTesting"/>
+        </classes>
+    </test> <!-- Test -->
+
+    <test name="Test Basics 2">
+        <parameter name="browser" value="firefox"></parameter>
+        <parameter name="os" value="linux"></parameter>
+        <classes>
+            <class name="testng.ParallelTesting"/>
+        </classes>
+    </test> <!-- Test -->
+</suite> <!-- Suite -->
+
+
+public class ParallelTesting {
+
+    @BeforeMethod
+    @Parameters({"browser","os"})
+    public void beforeMessage(String br,String os) {
+        System.out.println("Test started in " + br.toUpperCase() + " browser and "+os.toUpperCase()+" OS");
+    }
+
+    @AfterMethod
+    public void afterMessage() {
+        System.out.println("Test ended");
+    }
+
+    @Test()
+    public void login1() {
+        System.out.println("Test method1...");
+    }
+
+    @Test()
+    public void login2() {
+        System.out.println("Test method2...");
+    }
+}
+
+OUTPUT:
+Test started in CHROME browser and WINDOWS OS
+Test started in FIREFOX browser and LINUX OS
+Test method1...
+Test method1...
+Test ended
+Test ended
+Test started in FIREFOX browser and LINUX OS
+Test method2...
+Test started in CHROME browser and WINDOWS OS
+Test ended
+Test method2...
+Test ended
+
+===============================================
+Practice Suite
+Total tests run: 4, Passes: 4, Failures: 0, Skips: 0
+===============================================
+
+12. Encapsulation in Framework
+->POC Private elements and Public action methods
+
+13. How to run automation code in Jenkins
+->Using Build Now option
+
+14. How to manage code 
+->VCS: GitHub
+
+15. Screenshot for failed test cases
+->Using TakesScreenshot interface and getScreenshotAs() method
+
+	public String getScreenshot(String testCaseName, WebDriver driver) throws IOException {
+		TakesScreenshot ts = (TakesScreenshot) driver;
+		File source = ts.getScreenshotAs(OutputType.FILE);
+		File file = new File(System.getProperty("user.dir") + "//reports//" + testCaseName + ".png");
+		FileUtils.copyFile(source, file);
+		return System.getProperty("user.dir") + "//reports//" + testCaseName + ".png";
+
+	}
+
+16.How we arrange locators
+->Using POM design pattern
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+
+public class PaymentPage extends Utilities {
+
+	public WebDriver driver;
+	public Actions actions;
+	
+	public PaymentPage(WebDriver driver) {
+		super(driver);
+		this.driver = driver;
+		PageFactory.initElements(driver, this); // Initialize current class driver object
+	}
+
+	// Page Factory design pattern
+	@FindBy(xpath = "//button[@class='ta-item list-group-item ng-star-inserted']/span")
+	List<WebElement> countriesLinks;
+
+	@FindBy(xpath = "//input[@placeholder='Select Country']")
+	WebElement countryTextbox;
+
+	public void selectCountry(String country) {
+		waitForAnElementToAppear(countryTextbox);
+		countryTextbox.sendKeys(country);
+		
+
+		for (WebElement w : countriesLinks) {
+			if (w.getText().equalsIgnoreCase(country)) {
+				actions = new Actions(driver);
+				actions.click(w).build().perform();
+				break;
+			}
+		}
+	}
+
+}
+
+**************************************************************************************************************************************************
+Core WebDriver Interview Question
+=================================
+1. Difference between get() and navigate()
+get()
+->waits for page to load while opening
+->parameter only string 
+
+navigate().to()
+->internally calls get(), by converting object format to string format if url is of form object type
+->acceps url in string and url class reference
+
+URL url=new URL("https://www.google.com");
+driver.navigate().to(url);
+
+2. Quit() and Close()
+->Quit() is used to close all the browsers opened by current driver instance.
+
+3. Implicit wait
+->Apply wait for all the elements
+->If it takes more than specified time then it throws exception.
+->Cant apply different time for different elements.
+->The default condition that implicit wait checks is whether an element is present in the DOM. It does not check if the element is visible or clickable—just that it exists in the DOM.
+
+4. Difference between Implicit and Explicit wait
+->If execution of automation script is faster than response of the application 
+->To keep same sync between application response and execution of automation script we use Synchronization methods.
+
+Implicitly Wait
+---------------
+->Apply wait for all the elements
+->If it takes more than specified time then it throws exception.
+->Cant apply different time for different elements.
+
+
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+Explicit Wait
+-------------
+->Apply wait for specific element for specific condition for specific time
+->If condition satisfied within that time then it returns the Webelement else it throws exception No Such Element
+->If there is any Sync issue for any element then go for it else no need.
+->Most used
+visibilityOfELementLocated()
+
+
+Accepts: WebElement/ By Class reference
+Returns: WebElement after if satisfy condition based on specified time else it throws exception
+
+->Types of methods in ExpectedConditions class
+
+//passing By class reference
+wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
+
+//Passing WebElement
+WebElement loginButton = driver.findElement(By.tagName("button"));
+wait.until(ExpectedConditions.elementToBeClickable(loginButton));
+
+alertisPreset()
+elementSelectionStateToBe(
+elementToBeClickable()
+elementToBeSelected()
+presenceOfElementLocatedBy()
+presenceOfElementLocated()
+visibilityOfELementLocated()
+invisibilityOfELementLocated()
+....
+
+Ex:
+public class SynchronizationDemo {
+    public static void main(String[] args) throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
+        driver.manage().window().maximize();
+
+        //Implicit Wait
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+        //Explicit Wait
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement userNmeTextBox = wait.until(ExpectedConditions.presenceOfElementLocated(By.name("username")));
+        userNmeTextBox.sendKeys("Admin");
+
+        WebElement passwordTextBox = driver.findElement(By.name("password"));
+        passwordTextBox.sendKeys("admin123");
+
+        WebElement loginButton = driver.findElement(By.tagName("button"));
+        loginButton.click();
+
+        Thread.sleep(3000);
+        driver.quit();
+
+    }
+}
+
+Note: The default condition that implicit wait checks is whether an element is present in the DOM. It does not check if the element is visible or clickable—just that it exists in the DOM.
+
+5. In How many ways we can handle frames in Web application
+->Methods
+driver.switchTo().frame("");
+id/name/web element/index
+driver.switchTo().defaultContent();
+
+->Tag: frame or iframe
+->Switch to frame and perform application, then switch back to default content.
+
+Ex:
+public class FrameDemo {
+    private static String appu;
+
+    public static void main(String[] args) throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("https://ui.vision/demo/webtest/frames/");
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+        WebElement frame1 = driver.findElement(By.xpath("//frame[@src='frame_1.html']"));
+        driver.switchTo().frame(frame1);
+        Thread.sleep(3000);
+        driver.findElement(By.xpath("//input[@name='mytext1']")).sendKeys("appu");
+        Thread.sleep(3000);
+
+    }
+}
+
+6. Code to handle 3 Child windows
+->Methods
+driver.getWindowHandle()
+driver.getWindowHandles()
+driver.switchTo().window(Strig handle)
+
+->To switch to child windows
+
+Ex:
+public class BrowserWindow {
+    public static void main(String[] args) throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+        driver.findElement(By.linkText("OrangeHRM, Inc")).click();
+        Thread.sleep(3000);
+
+        Set<String> handles = driver.getWindowHandles();
+        Iterator<String> it = handles.iterator();
+
+        while (it.hasNext()) {
+            String handle = it.next();
+            driver.switchTo().window(handle);
+            if (title.equalsIgnoreCase("Human Resources Management Software | OrangeHRM")) {
+                driver.findElement(By.xpath("(//button[text()='Book a Free Demo'])[2]")).click();
+                String text = driver.findElement(By.xpath("//h1[contains(text(),'Manage Your People and Operations')]")).getText();
+                System.out.println("String Text: " + text);
+            }
+        }
+        driver.quit();
+    }
+}
+
+7. How to Handle HTTP certifications
+DesiredCapabilities cap=new DesiredCapabilities();
+cap.setCapability(CapabilityType.ACCEPT_SSL_CERTS,true);
+
+
+8. Locators in Selenium
+->Way to identify HTML elements on a web page
+->Static method present in By class
+->To get group of Webelements, then we can use className() and tagName()
+
+Basic Locators
+--------------
+id()/name()/linkText()/className()/tagName()/partialLinkText()
+
+Customized Locators
+-------------------
+cssSelector()/xpath()
+
+Ex: 
+WebElement element=driver.findElement(By.name("search"));  //Identify single first element
+List<WebElement> elements=driver.findElements(By.className("searchAll")); //Identify multiple elements
+
+Compound class names
+--------------------
+->If we have 2 or more class names then we can use any one
+
+Ex:
+<button class="submit signInBtn" type="submit">Sign In</button>
+
+Both will work fine
+driver.findElement(By.className("signInBtn")).click();
+driver.findElement(By.className("submit")).click();
+
+CSS Selector
+============
+Ex: WebElement element=driver.findElement(By.cssSelector(""));
+
+Generic Syntax
+--------------
+tagName#idName
+tagName.className
+tagName[attName='attValue']
+tagName.className[attName='attValue']
+
+->tagName is optional
+#idName
+.className
+
+CSS selector for Compound class name
+------------------------------------
+Ex: <button class="submit signInBtn" type="submit">Sign In</button>
+button.submit
+button.signInBtn
+.submit
+button[class='submit signInBtn']
+
+Index in CSS Selector
+---------------------
+cssSelector:nth-child(index value)
+Ex: input[type='text']:nth-child(5)
+
+Parent to child traverse in CSS Selector
+----------------------------------------
+parentCssselector childCssselector
+Ex: form[action='#'] p
+
+Regular expression in CSS Selector
+----------------------------------
+tagname[attributeName*='partial attribute value']
+
+
+Xpath
+=====
+Ex: WebElement element=driver.findElement(By.xpath(""));
+
+Hierarchy
+---------
+/ current child hierarchy
+// all child hierarchy
+
+Types
+-----
+->Absolute: 
+Starts with html 
+Starts with/
+Do not use attributes
+Not stable
+
+->Relative: 
+Direct to element
+Starts with //
+Uses attributes
+Stable
+
+Generic Syntax
+--------------
+//tagName[@attName='attvalue']
+//tagName[@attName='attvalue'][@attName='attvalue']
+//*[@attName='attvalue']
+//tagName[@attName='attvalue' and @attName='attvalue']
+//tagName[@attName='attvalue' or @attName='attvalue']
+//tagName[text()='anyInnerText']
+//tagName[starts-with(@attName,'partialAttValue')]
+//tagName[ends-with(@attName,'partialAttValue')]
+//tagName[contains(@attName,'partialAttValue')]
+//tagName[contains(text(),'partialInnerTextValue')]
+
+Index in Xpath
+--------------
+(xpath)[index value]
+Index starts from 1
+Ex:(//input[@type='text'])[1]
+
+Chained Xpath
+-------------
+->No attributes or inner text for an element then need to come from parent
+->Go to parent and come to child
+parent
+ child1
+  child2 
+
+parentXpathwithAttribute/child1tagName/child2TagName
+
+Xpath Axes
+----------
+->father and grand parents
+ancestor::
+
+Syntax:
+xpath/ancestor::ancestorXpath or ancestorTagname
+
+->child and grand children
+descendant::
+//
+
+Syntax:
+xpath/descendant::descendantXpath or descendantTagname
+xpath//descendantXpath or descendantTagname
+
+->Immediate brother, same parent other children
+preceding-sibling::
+following-sibling::
+
+Syntax:
+xpath/preceding-sibling::followingSiblingXpath or followingSiblingTagname
+xpath/following-sibling::precedingSiblingXpath or precedingSilingTagname
+
+This is also allowed
+xpath/following-sibling::precedingSiblingXpath or precedingSilingTagname/following-sibling::precedingSiblingXpath or precedingSilingTagname
+Ex://button[text()='Login']/preceding-sibling::button/preceding-sibling::a
+
+->brothers, same or different parents other children [same hierarchy] 
+preceding::
+following::
+
+Syntax:
+xpath/preceding::precedingSiblingXpath or precedingSilingTagname
+xpath/following::followingSiblingXpath or followingSiblingTagname
+
+
+->Parent to Child or Child to Parent
+parent::
+child::
+
+Syntax:
+Child to Parent
+childXpath/parent::parentXpath or parentTagname
+
+Parent to child
+parentXpath/child::childXpath or childTagname
+
+
+Ex 1: Grand Children [descendant]
+form
+  div
+  div
+    input
+    span
+
+Identify span from form
+formXpath/div[2]/span
+formXpath/*/span
+formXpath/descendant::span
+formXpath//span
+
+Ex 2: Grand Children [descendant]
+a1
+a2
+a3
+  a31
+  a32
+  a33
+
+Need to go to a33 from a1
+a1//a33
+
+
+Ex: Ancestor 
+form
+  div
+  div
+    input
+    span
+
+span/ancestor::form    //form will be identified
+span/ancestor::*       //div will be identified since its first ancestor
+
+Either one Xpath
+-----------------
+xpath1|xpath2|xpath3
+
+first()/last()
+--------------
+->Used as index
+->To find first or last of all current identified elements
+xpath/following::input[2]
+xpath/following::input[last()]
+xpath/following::input[first()]
+
+
+9. What is the method to check if an check box is selected or not
+boolean status=element.isSeleced();
+
+10. How to identify if the element is visible or hidden in the page
+boolean status=element.isDisplayed();
+
+11. How to get count of similar object list in web page
+->Identify using generic xpath
+List<WebElement> elements=driver.findElements(By.xpat(""));
+int size=elements.size();
+
+12. Hpw to enter text in caps lock
+Action action=new Action(driver);
+action.keyPress(Keys.SHIFT).sendKeys("an text").keyRelease().build().perform();
+
+13. Mouse over on Web element
+Actions actions = new Actions(driver);    
+actions.moveToElement(element).build().perform();
+
+14. Method to handle Java alerts
+->Window which we cannot able to identify HTML elements
+
+Methods
+---------
+Alert alert=driver.switchTo().alert();
+alert.accept()
+alert.dismiss()
+alert.sendkeys("");
+alert().getText();
+
+15. How to get Links count in a page
+List<WebElement> links=driver.findElements(By.tagname("a"));
+int count=links.size();
+
+16. How to navigate if we navigated to child window successfully
+->Get window handles, Switch to it, check the title or any static element and verify
+
+Ex:
+public class BrowserWindow {
+    public static void main(String[] args) throws InterruptedException {
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+        driver.findElement(By.linkText("OrangeHRM, Inc")).click();
+        Thread.sleep(3000);
+
+        Set<String> handles = driver.getWindowHandles();
+        Iterator<String> it = handles.iterator();
+
+        while (it.hasNext()) {
+            String handle = it.next();
+            driver.switchTo().window(handle);
+            if (title.equalsIgnoreCase("Human Resources Management Software | OrangeHRM")) {
+                driver.findElement(By.xpath("(//button[text()='Book a Free Demo'])[2]")).click();
+                String text = driver.findElement(By.xpath("//h1[contains(text(),'Manage Your People and Operations')]")).getText();
+                System.out.println("String Text: " + text);
+            }
+        }
+        driver.quit();
+    }
+}
+
+17. Browser methods
+WebDriver driver=new ChromeDriver(); //Opens Chrome browser
+WebDriver driver=new FirefoxDriver(); //Opens Firefox browser
+WebDriver driver=new EdgeDriver(); //Opens Edge browser
+
+18. Screenshot
+->Using TakeScreenshot interface and getScreenshotAs()
+->Output type is file and Return type is File
+
+To get current project directory
+System.getProperty("user.dir")
+
+Ex:
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+
+import org.apache.commons.io.FileUtils;
+
+
+public class FullPageScreenshot  {
+    public static void main(String[] args) throws InterruptedException, IOException {
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.get("https://demo.nopcommerce.com/");
+        
+        TakesScreenshot ts = (TakesScreenshot) driver;
+        File screenshot = ts.getScreenshotAs(OutputType.FILE);
+        File source = new File(System.getProperty("user.dir")+"\\src\\main\\screenshotssamples"+"\\error.png");
+        FileUtils.copyFile(screenshot, source);
+        
+        Thread.sleep(5000);
+        driver.quit();
+    }
+}
+
+******************************************************************************************************************************************************
+Core Java Miscellaneous Interview Questions
+=======================================
+1. Instance, Local and Class variables
+Instance variable
+->Declared outside method, block, constructor and inside the class.
+->Has default value
+->Can be accessed using reference variable
+->Stored in heap
+
+Local variable
+->Declared inside method, block, constructor, loop.
+->Not have default value, should be initialized before use.
+->Stored in stack
+
+Static variable
+->Declared outside method, block, constructor and inside the class with keyword static.
+->Has default value
+->Can be accessed using reference variable and class name
+->Stored in Method area[meta space]
+
+2. Use of static keyword in Java
+->If we want any specific variables, methods, blocks at class level scope then we need to declare as static.
+->Will be loaded to meta space at once while loading class byte code to memory
+->Same copy will be shared to all the objects and if any one modified it will be reflected to all.
+->Static variables can be accessed inside sm, sb,im,ib but instance variables can be accesses only inside ib and im.
+->can be accessed using class name or object reference variable
+
+->Static context: static variables/static block/static methods
+->Instance context: instance variables/instance block/instance methods
+->Static members are not object dependant but instance members are object dependant.
+
+Flow of execution: 
+static block or variable[class loading once per execution]
+instance block or variable[object creation/for each object creation]
+constructor[object creation/for each object creation]
+instance block or variable[object creation/for each object creation]
+constructor[object creation/for each object creation]
+
+3. Why String are immutable in Java
+6. How memory is allocated to String literal and String class object
+7. When to use == and equals() to compare string
+8. Importance and difference between String Buffer and String Builder classes
+9. Program in making String mutable with String Buffer
+10. What are Interfaces
+11. What is Run time Polymorphism
+12. What are abstract classes
+13. Difference between Abstract class and Interface
+
+*********************************************************************************************************************************************************
+Manual and Behavioral Interview Questions
+==========================================
+
+1. Suppose you find a bug in production. how would you make sure that the same bug is not introduced again?
+->Add uncaught functionality to regression test cases
+If you have Automated Regression Suite, then write a new Script which validates above functionality
+
+2. What do you do when your developer denies that what you filed IS A BUG?
+->Provide Business Documentation reference to support why the existing functionality is not as per design.
+->Involve Product Owner / Business Analyst for Discussion.
+
+IF Bug is not reproducible then
+->Provide Screenshots of the Bug, Give Timestamp on when you reproduced this so that Developer can check in Application Logs.
+->Provide Test Data you have used for replicating issue
+
+3. What has been one of your greatest challenges while doing regression testing?
+-> Test Data issue
+->Improper selection of regression test cases might skip a major regression defect to be found
+
+4. Difference between functional and non-functional testing?
+->Functional testing verifies that features/System  working  as expected  according to requirements,
+->Nonfunctional requirements: How Well the system does it within design & resource constraints
+
+5. Enlist some of the key challenges that are faced while performing Software Testing
+->Data Issues, 
+->Environment Available,
+->Using right set of tools
+
+6. What are the different levels of testing?
+->Unit, Integration, System, Acceptance Testing
+
+7. What are the drawbacks of the Agile implementation/ methodology that you faced?
+->Sprints are usually very deadline constrained.
+->Documentation is not the priority
+->Frequent change in requirements
+
+8. What is your approach when you have a high priority release to be delivered in a very short time?
+-> Identify Critical scenarios and perform Manual testing on those. 
+-> Run Automation Suites
+
+9. Give an example for High Priority Low Severity Bug
+->Wrong Logo Image in Application
+
+10. What is your understanding regarding a Test plan?
+->Test plan is a document that consists of scope, approach, resources, and outline of the testing project as well as the activities for tracking the progress of the project.
+
+11. Explain what will be your reaction if a project you had been working got Sudden change in its deadline?
+->As a QA Engineer, Be open on your thoughts if you can deliver the project with QA Sign off covering all testcases
+->If Pre release is must, then discuss the opportunities of increasing QA Resources or possibility of partial product delivery
+-> You have the power to hold QA Sign off if you are not satisfied with quality of product which eventually stops the release date
+
+12. What is the difference between Smoke testing and Sanity Testing?
+->Sanity: When new build is given check major functionality to go ahead with System testing
+->Smoke: Moving to another Build test the features once.
+
+13. If a small section of code in application is updated? What is your Test approach in validating it?
+->Validate that part of functionality is working fine, all other impacted functionality.
+
+14. Differentiate Ad-hoc Testing and Exploratory Testing?
+-> Both are random testing basically done by senior members of the team like lead,...
+->If we do with having knowledge on the tool then its Ad-hoc testing.
+->To explore the tool, to gain knowledge we do Exploratory Testing
+
+15. What are your daily activities as a member of automation tester in your office?
+-> Running Smoke Suite on daily Basis and sending the mail to team on health of the application
+-> Verify Defects Assigned to you  and take appropriate Actions
+-> Working on Manual and Automation testing for the stories in Current Sprint
+
+16. How do you select regression test cases or form the regression test suite?
+->Core functionality testing TC, Recent changes functionality testing TC, Frequent issues testing TC, Production issue testing TC.
+
+17. Have you ever managed writing the test cases without having any documents?
+->In one of my previous migration project,  we had to re write our internal tool with new Technology[C++ to java] , but There are no testcases/Documentation for the old/existing product. 
+As there is no documentation, Below are the steps I have followed 
+->Understand and exploring the existing Product to come up with Scenarios.
+->Spending time with Product owner and Business or Seniors to understand the Business of the tool.
+->Going through production Bugs which found previously for product so that edge testcases are not missed in writing the tests for Upgraded product
+
+18. What is the first action you perform as a tester when application throws any weird Errors?
+->Check dev tools to observe request and response payload.
+->Which request failing
+->Verify in Logs
+->Execute same TC in other systems
+->Capture screenshot, data, payloads and raise the issue.
+
+19. How do you solve if there is any conflict with your peer QA on any technical aspect?
+->There should be argument only up to certain extent with your Peer on why you are correct
+->If it is still conflict,
+  Involve team and discuss the conflict issue with larger Audience. Open to take suggestions from your Team.
+  Accept any decision made from Team meeting with Smile.
+
+20. How do we decide if test case Is not ideal candidate for Automation?
+->Tests which are highly dependent on Data with frequent changes every time
+->Tests which cannot be automated due to technical challenges 
+->Tests which are unstable due to complex nature of Application.
+
+21. Difference between retesting and regression testing?
+->Re testing: Check defect fixes or test the feature with multiple test data
+->Regression testing: Change in new feature will not affect existing or implemented functionality
+
+22. What’s the most interesting bug that you’ve found recently?
+->Option of dropdown
+
+23. In Agile Environments, in case you have any doubts regarding your project, how do you approach?
+->As a tester, For Domain related queries, You should reach out to Business Analyst, Product Owner
+
+24. As a tester, how do you differentiate Dummy login page which is exactly designed like your Working project login page
+->Network tab or Application logs.
+
+25. How Will You Tell If Enough Test Cases Have Been Created To Test A Product?
+->Each Business requirement is mapped to at least one test Scenario
+->Each Test Scenario should have positive and negative test cases
+->Using  traceability Metrix to check whether these testcases are covering all the requirement specification
+->Prepare test scenarios, and send documents with business and get approval from the and consider their inputs.
+
+*********************************************************************************************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+P1: To count occurrence of each character in a string
+=====================================================
+public class LettersInname {
+    public static void main(String[] args) {
+        String str = "Punith Rajkuamr";
+        String str2 = str.replace(" ", "");
+        Map<Character, Integer> map = new HashMap<>();
+
+        char[] ch = str2.toCharArray();
+        for (char c : ch) {
+            int i = 0;
+            if (map.containsKey(c)) {
+                map.put(c, map.get(c) + 1);
+            } else {
+                map.put(c, 1);
+            }
+        }
+        System.out.println(map);
+    }
+}
+
+OUTPUT:
+{P=1, a=2, R=1, r=1, t=1, u=2, h=1, i=1, j=1, k=1, m=1, n=1}
+
+P2: Accepts array and return sum of all the elements
+====================================================
+public class AcceptsArrayReturnSumOfAllTheElements {
+
+    public static void main(String[] args) {
+        //Method 1:
+        int a[]={2,3,4,5};
+        int sum=0;
+        for(int i:a)
+        {
+            sum=sum+i;
+        }
+        System.out.println("Sum of elements is: "+sum);
+    }
+}
+
+OUTPUT:
+Sum of elements is: 14
+
+P3: Print 5 multiplication table without using multiplication Operator 
+======================================================================
+Ex: 
+Input 5,10
+Output: 50
+
+public class Print5MultiplicationTableWithoutUsingMultiplicationOperator {
+    public static void main(String[] args) {
+        System.out.println("Result is: " + function1(5, 10));
+    }
+
+    public static int function1(int a, int b) {
+        int result = 0;
+        for (int i = 0; i < b; i++) {
+            result = result + a;
+        }
+        return result;
+    }
+}
+
+OUTPUT:
+Result is: 50
+
+
+
